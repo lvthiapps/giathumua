@@ -2,238 +2,490 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giá Thu Mua HT26</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tính Giá Thu Mua</title>
     <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --blue-zalo: #0068ff;
+            --blue-zalo-hover: #004bbb;
+            --bg-body: #e9ecef;
+            --bg-card: #ffffff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #ced4da;
+            --focus-border: #007aff;
+            --focus-bg: #f0f8ff;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent; 
         }
 
         body {
-            background-color: #f0f0f0;
+            background-color: var(--bg-body);
             display: flex;
             justify-content: center;
+            /* Thêm padding để trên máy tính form không chạm sát 2 mép, còn trên điện thoại sẽ tự ôm gọn */
+            padding: 15px; 
+            min-height: 100vh;
         }
 
         .app-container {
             width: 100%;
-            max-width: 450px;
-            background-color: white;
-            min-height: 100vh;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            padding-bottom: 20px;
+            max-width: 400px; /* Thu gọn chiều rộng tối đa để form không bị bẹp ngang quá dài */
+            background-color: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            /* Chừa chỗ cho bàn phím */
+            padding-bottom: 280px; 
+            height: fit-content;
         }
 
+        /* HEADER */
         .header {
-            background-color: #333333;
+            background: linear-gradient(135deg, #1f1f1f, #333333);
             color: white;
-            padding: 12px 15px;
-            font-size: 20px;
+            padding: 16px 20px;
+            font-size: 18px;
             display: flex;
             align-items: center;
-            font-weight: bold;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .header .logo {
-            color: #4CAF50;
-            font-size: 10px;
-            margin-right: 8px;
+            background: var(--primary-light);
+            color: white;
+            font-size: 11px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin-right: 10px;
+            letter-spacing: 0;
         }
 
+        /* FORM CONTENT */
         .form-content {
-            padding: 15px;
+            padding: 24px 20px; /* Tăng lề 2 bên để form gọn gàng hơn */
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
+        /* KIỂU DÁNG LABEL VÀ INPUT */
         label {
             display: block;
-            font-weight: bold;
-            font-size: 22px;
+            font-weight: 600;
+            font-size: 15px;
             margin-bottom: 8px;
-            color: #000;
+            color: var(--text-muted);
         }
 
         .input-field {
             width: 100%;
-            background-color: #d1d1d1;
-            border: 2px solid #000;
-            border-radius: 6px;
-            padding: 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
             font-size: 20px;
+            font-weight: 600;
+            color: var(--text-main);
             outline: none;
             display: block;
+            transition: all 0.25s ease;
+            background-color: #f8f9fa;
         }
 
-        .btn-compute {
-            width: 100%;
-            background-color: #43a047;
-            color: #000;
-            border: 2px solid #000;
-            border-radius: 6px;
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
+        .editable-field {
             cursor: pointer;
-            margin: 10px 0 20px 0;
-            text-transform: uppercase;
         }
 
-        .btn-compute:active {
-            background-color: #388e3c;
+        .editable-field.active {
+            border-color: var(--focus-border); 
+            background-color: var(--focus-bg);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
         }
 
+        /* DROPDOWN ẨM ĐỘ CHUẨN */
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border-color);
+        }
+
+        .form-group-inline label {
+            margin-bottom: 0;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .select-field {
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            outline: none;
+            cursor: pointer;
+            text-align: right;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        /* KHU VỰC HIỂN THỊ KẾT QUẢ ĐẸP MẮT (RESULT CARD) */
+        .result-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+        }
+        .result-item:last-child {
+            margin-bottom: 0;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255,255,255,0.4);
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value small {
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        /* NÚT CHIA SẺ */
         .btn-share {
             width: 100%;
-            background-color: #0068ff; /* Màu xanh Zalo */
+            background-color: var(--blue-zalo);
             color: white;
-            border: 2px solid #004bbb;
-            border-radius: 6px;
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 10px;
             text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 104, 255, 0.3);
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn-share:active {
-            background-color: #004bbb;
+        .btn-share:active { 
+            background-color: var(--blue-zalo-hover); 
+            transform: scale(0.98);
         }
 
-        .readonly-field {
-            background-color: #e0e0e0;
-            cursor: not-allowed;
-            font-weight: bold;
-            color: #d32f2f; /* Màu đỏ cho kết quả dễ nhìn */
+        /* BÀN PHÍM ẢO HIỆN ĐẠI */
+        .keypad-container {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 100%;
+            max-width: 400px;
+            /* Hiệu ứng kính mờ chuẩn iOS */
+            background-color: rgba(209, 213, 219, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 12px 12px calc(20px + env(safe-area-inset-bottom)) 12px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .keypad-container.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .keypad-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 5px;
+        }
+
+        .keypad-btn-del {
+            color: #ff3b30;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .keypad-btn-done {
+            color: #007aff;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .keypad-grid button {
+            background-color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 26px;
+            font-weight: 500;
+            color: #000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        .keypad-grid button:active {
+            background-color: #b5b9c2;
         }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <!-- Header -->
         <div class="header">
             <span class="logo">v=d/t</span>
-            <span>GIÁ THU MUA HT26</span>
+            <span>TÍNH GIÁ THU MUA LÚA GIỐNG</span>
         </div>
-
+        <!-- Form Content -->
         <div class="form-content">
             
-            <div class="form-group">
-                <label>Ẩm độ tươi (%)</label>
-                <input type="text" inputmode="decimal" id="amDo" class="input-field" placeholder="0" oninput="formatCurrency(this)">
+            <!-- Nhóm chọn Ẩm độ chuẩn -->
+            <div class="form-group-inline">
+                <label for="amDoChuan">Tính theo độ ẩm:</label>
+                <div>
+                    <select id="amDoChuan" class="select-field" onchange="tinhToan()">
+                        <option value="25" selected>25%</option>
+                        <option value="26">26%</option>
+                        <option value="28">28%</option>
+                        <option value="29">29%</option>
+                    </select>
+                    <span style="color: var(--primary); font-weight: bold;">▾</span>
+                </div>
             </div>
 
             <div class="form-group">
-                <label>Giá định (đồng/kg)</label>
-                <input type="text" inputmode="decimal" id="giaDinh" class="input-field" placeholder="0" oninput="formatCurrency(this)">
+                <label>Ẩm độ tươi hiện tại (%)</label>
+                <input type="text" id="amDo" class="input-field editable-field" placeholder="0" readonly onclick="openKeypad('amDo')">
             </div>
 
             <div class="form-group">
-                <label>Cộng hỗ trợ theo giống (đồng)</label>
-                <input type="text" inputmode="decimal" id="hoTro" class="input-field" value="750" oninput="formatCurrency(this)">
-            </div>
-
-            <button class="btn-compute" onclick="tinhToan()">TÍNH GIÁ THU MUA</button>
-
-            <div class="form-group">
-                <label>Giá thu mua (đồng/kg)</label>
-                <input type="text" id="giaThuMua" class="input-field readonly-field" readonly placeholder="Kết quả">
+                <label>Giá định (VNĐ/kg)</label>
+                <input type="text" id="giaDinh" class="input-field editable-field" placeholder="0" readonly onclick="openKeypad('giaDinh')">
             </div>
 
             <div class="form-group">
-                <label>Giá thu mua cộng bốc xếp 60đ (đồng/kg)</label>
-                <input type="text" id="giaThuMuaBocXep" class="input-field readonly-field" readonly placeholder="Kết quả">
+                <label>Cộng hỗ trợ theo giống (VNĐ)</label>
+                <input type="text" id="hoTro" class="input-field editable-field" value="750" readonly onclick="openKeypad('hoTro')">
             </div>
 
-            <button class="btn-share" onclick="chiaSeZalo()">CHIA SẺ KẾT QUẢ</button>
+            <!-- Khu vực thẻ kết quả đẹp mắt -->
+            <div class="result-card">
+                <div class="result-item">
+                    <div class="result-label">GIÁ THU MUA</div>
+                    <div class="result-value" id="giaThuMuaDisplay">0 <small>đ/kg</small></div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">GIÁ ĐÃ CỘNG BỐC XẾP (60đ)</div>
+                    <div class="result-value" id="giaThuMuaBocXepDisplay">0 <small>đ/kg</small></div>
+                </div>
+            </div>
+
+            <!-- Nút Chia sẻ -->
+            <button class="btn-share" onclick="chiaSeZalo()">
+                CHIA SẺ KẾT QUẢ 
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
 
         </div>
     </div>
 
+    <!-- BÀN PHÍM ẢO CUSTOM -->
+    <div id="custom-keypad" class="keypad-container">
+        <div class="keypad-header">
+            <button class="keypad-btn-del" onclick="pressKey('delete')">⌫ Xóa</button>
+            <button class="keypad-btn-done" onclick="closeKeypad()">Xong ✓</button>
+        </div>
+        <div class="keypad-grid">
+            <button onclick="pressKey('1')">1</button>
+            <button onclick="pressKey('2')">2</button>
+            <button onclick="pressKey('3')">3</button>
+            <button onclick="pressKey('4')">4</button>
+            <button onclick="pressKey('5')">5</button>
+            <button onclick="pressKey('6')">6</button>
+            <button onclick="pressKey('7')">7</button>
+            <button onclick="pressKey('8')">8</button>
+            <button onclick="pressKey('9')">9</button>
+            <button onclick="pressKey('.')">.</button>
+            <button onclick="pressKey('0')">0</button>
+            <button onclick="pressKey(',')">,</button>
+        </div>
+    </div>
+
     <script>
-        // Hàm tự động thêm dấu phẩy phân cách hàng nghìn
-        function formatCurrency(input) {
-            let value = input.value.replace(/[^0-9.]/g, '');
-            let parts = value.split('.');
-            if (parts.length > 2) {
-                parts.pop(); 
+        let currentInputId = null;
+
+        function openKeypad(id) {
+            document.querySelectorAll('.editable-field').forEach(el => el.classList.remove('active'));
+            currentInputId = id;
+            let activeEl = document.getElementById(id);
+            activeEl.classList.add('active');
+            
+            document.getElementById('custom-keypad').classList.add('show');
+            // Cuộn trang chậm lại một chút để bàn phím có hiệu ứng trượt lên
+            setTimeout(() => { activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 250);
+        }
+
+        function closeKeypad() {
+            document.getElementById('custom-keypad').classList.remove('show');
+            if (currentInputId) {
+                document.getElementById(currentInputId).classList.remove('active');
+                currentInputId = null;
             }
+        }
+
+        function pressKey(key) {
+            if (!currentInputId) return;
+            let inputElement = document.getElementById(currentInputId);
+            let rawValue = inputElement.value.replace(/,/g, '');
+
+            if (key === 'delete') {
+                rawValue = rawValue.slice(0, -1); 
+            } 
+            else if (key === '.' || key === ',') {
+                if (!rawValue.includes('.')) {
+                    if (rawValue === '') rawValue = '0.';
+                    else rawValue += '.'; 
+                }
+            } 
+            else {
+                if (rawValue === '0' && key !== '.') {
+                    rawValue = key; 
+                } else {
+                    rawValue += key;
+                }
+            }
+
+            inputElement.value = formatRawValue(rawValue);
+            tinhToan();
+        }
+
+        function formatRawValue(val) {
+            if (!val) return '';
+            let parts = val.split('.');
             if (parts[0]) {
                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
-            input.value = parts.join('.');
+            return parts.length > 1 ? parts[0] + '.' + parts[1] : parts[0];
         }
 
-        // Hàm gỡ bỏ dấu phẩy để lấy số chuẩn
         function parseValue(id) {
             let val = document.getElementById(id).value.replace(/,/g, '');
             return parseFloat(val) || 0; 
         }
 
-        // Hàm định dạng kết quả (làm tròn số nguyên & thêm phẩy)
         function formatOutput(num) {
             let roundedNum = Math.round(num); 
             return roundedNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // Hàm tính toán
+        // BIẾN LƯU KẾT QUẢ ĐỂ CHIA SẺ
+        let globalGiaThuMua = 0;
+        let globalGiaThuMuaBocXep = 0;
+
         function tinhToan() {
             let amDo = parseValue('amDo');
             let giaDinh = parseValue('giaDinh');
             let hoTro = parseValue('hoTro');
+            let amDoChuan = parseFloat(document.getElementById('amDoChuan').value) || 25;
 
-            let giaThuMua = ((100 - amDo) / 75) * (giaDinh + hoTro);
-            let giaThuMuaBocXep = giaThuMua + 60;
+            let mauSo = 100 - amDoChuan;
 
-            document.getElementById('giaThuMua').value = formatOutput(giaThuMua);
-            document.getElementById('giaThuMuaBocXep').value = formatOutput(giaThuMuaBocXep);
+            // Tính toán
+            globalGiaThuMua = ((100 - amDo) / mauSo) * (giaDinh + hoTro);
+            globalGiaThuMuaBocXep = globalGiaThuMua + 60;
+
+            // Cập nhật lên UI (Lấy div để thay đổi HTML bên trong)
+            document.getElementById('giaThuMuaDisplay').innerHTML = `${formatOutput(globalGiaThuMua)} <small>đ/kg</small>`;
+            document.getElementById('giaThuMuaBocXepDisplay').innerHTML = `${formatOutput(globalGiaThuMuaBocXep)} <small>đ/kg</small>`;
         }
 
-        // Hàm Chia sẻ / Xuất dữ liệu
         function chiaSeZalo() {
-            // Lấy dữ liệu hiển thị trên các ô
+            let amDoChuan = document.getElementById('amDoChuan').value;
             let amDo = document.getElementById('amDo').value || "0";
             let giaDinh = document.getElementById('giaDinh').value || "0";
             let hoTro = document.getElementById('hoTro').value || "0";
-            let giaThuMua = document.getElementById('giaThuMua').value;
-            let giaThuMuaBocXep = document.getElementById('giaThuMuaBocXep').value;
 
-            // Kiểm tra xem đã bấm Compute chưa
-            if (!giaThuMua) {
-                alert("Vui lòng bấm TÍNH GIÁ THU MUA để tính toán trước khi chia sẻ!");
-                return;
-            }
-
-            // Soạn nội dung tin nhắn để xuất ra
-            let textToShare = `BÁO GIÁ THU MUA HT26\n` +
+            let textToShare = `BÁO GIÁ THU MUA\n` +
                               `------------------------\n` +
+                              `- Tính theo chuẩn: ${amDoChuan}%\n` +
                               `- Ẩm độ tươi: ${amDo}%\n` +
                               `- Giá định: ${giaDinh} đ/kg\n` +
-                              `- Hỗ trợ theo giống: ${hoTro} đ\n` +
-                              `=> GIÁ THU MUA: ${giaThuMua} đ/kg\n` +
-                              `=> GIÁ (+ Bốc xếp): ${giaThuMuaBocXep} đ/kg`;
+                              `- Hỗ trợ giống: ${hoTro} đ\n` +
+                              `------------------------\n` +
+                              `💰 GIÁ THU MUA: ${formatOutput(globalGiaThuMua)} đ/kg\n` +
+                              `📦 GIÁ (+ Bốc xếp): ${formatOutput(globalGiaThuMuaBocXep)} đ/kg`;
 
-            // Gọi API Chia sẻ của điện thoại (Hỗ trợ iOS, Android)
             if (navigator.share) {
                 navigator.share({
-                    title: 'Báo Giá Thu Mua HT26',
+                    title: 'Báo Giá Thu Mua',
                     text: textToShare
                 }).catch((error) => console.log('Lỗi chia sẻ:', error));
             } else {
-                // Nếu dùng trên máy tính bàn hoặc trình duyệt không hỗ trợ, sẽ tự động copy vào Clipboard
                 navigator.clipboard.writeText(textToShare).then(() => {
                     alert("Đã sao chép nội dung báo giá!\nBạn có thể mở Zalo và dán (Ctrl+V) để gửi cho khách.");
-                }).catch(err => {
-                    alert("Không thể sao chép, vui lòng thử lại.");
                 });
             }
         }
+
+        // Gọi tính toán ngay khi mở trang
+        window.onload = function() {
+            tinhToan();
+        };
     </script>
 
 </body>
